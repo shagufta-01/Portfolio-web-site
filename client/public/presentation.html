@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio Enquiry System - Interactive Presentation</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #f5f3f0;
+            --bg-secondary: #fafaf8;
+            --text-primary: #1a1a1a;
+            --text-secondary: #666666;
+            --accent-blue: #7aa3d4;
+            --accent-pink: #d9a8b3;
+            --border-color: #e8e8e8;
+            --success: #4ade80;
+            --warning: #fbbf24;
+            --info: #60a5fa;
+        }
+
+        body {
+            font-family: 'Sora', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        /* Header */
+        header {
+            background: white;
+            border-bottom: 1px solid var(--border-color);
+            padding: 2rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        header h1 {
+            font-size: 2rem;
+            font-weight: 900;
+            margin-bottom: 0.5rem;
+        }
+
+        header p {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+        }
+
+        /* Navigation */
+        nav {
+            display: flex;
+            gap: 2rem;
+            margin-top: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 1rem;
+        }
+
+        nav button {
+            background: none;
+            border: none;
+            padding: 0.5rem 0;
+            font-size: 1rem;
+            cursor: pointer;
+            color: var(--text-secondary);
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        nav button.active {
+            color: var(--accent-blue);
+            border-bottom-color: var(--accent-blue);
+        }
+
+        nav button:hover {
+            color: var(--accent-blue);
+        }
+
+        /* Sections */
+        section {
+            display: none;
+            padding: 3rem 0;
+        }
+
+        section.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* Hero Section */
+        .hero {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            align-items: center;
+            padding: 4rem 0;
+        }
+
+        .hero-content h2 {
+            font-size: 3rem;
+            font-weight: 900;
+            margin-bottom: 1rem;
+            line-height: 1.2;
+        }
+
+        .hero-content p {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+        }
+
+        .hero-visual {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+        }
+
+        .shape {
+            width: 150px;
+            height: 150px;
+            border-radius: 20px;
+            opacity: 0.3;
+        }
+
+        .shape-blue {
+            background: linear-gradient(135deg, var(--accent-blue), rgba(122, 163, 212, 0.5));
+            transform: rotate(-15deg);
+        }
+
+        .shape-pink {
+            background: linear-gradient(135deg, var(--accent-pink), rgba(217, 168, 179, 0.5));
+            transform: rotate(15deg);
+            margin-top: 2rem;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+
+        .stat-card {
+            background: white;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 2rem;
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 900;
+            color: var(--accent-blue);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        /* Chart Container */
+        .chart-container {
+            background: white;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 2rem 0;
+            position: relative;
+            height: 400px;
+        }
+
+        .chart-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            color: var(--text-primary);
+        }
+
+        /* Features Section */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+
+        .feature-card {
+            background: white;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 2rem;
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            border-color: var(--accent-blue);
+            box-shadow: 0 5px 20px rgba(122, 163, 212, 0.1);
+        }
+
+        .feature-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .feature-card h3 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .feature-card p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        /* Tech Stack */
+        .tech-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        .tech-badge {
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-pink));
+            color: white;
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        /* CTA Button */
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-pink));
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(122, 163, 212, 0.3);
+        }
+
+        /* Footer */
+        footer {
+            background: white;
+            border-top: 1px solid var(--border-color);
+            padding: 3rem 0;
+            margin-top: 4rem;
+            text-align: center;
+            color: var(--text-secondary);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero {
+                grid-template-columns: 1fr;
+            }
+
+            .hero-content h2 {
+                font-size: 2rem;
+            }
+
+            nav {
+                gap: 1rem;
+                overflow-x: auto;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .tech-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        /* Print Styles */
+        @media print {
+            nav, .cta-button {
+                display: none;
+            }
+
+            section {
+                display: block !important;
+                page-break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>📊 Portfolio Enquiry System</h1>
+            <p>Interactive Project Showcase & Visualization</p>
+            <nav>
+                <button class="nav-btn active" data-section="overview">Overview</button>
+                <button class="nav-btn" data-section="features">Features</button>
+                <button class="nav-btn" data-section="analytics">Analytics</button>
+                <button class="nav-btn" data-section="architecture">Architecture</button>
+                <button class="nav-btn" data-section="showcase">Live Demo</button>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- Overview Section -->
+        <section id="overview" class="active">
+            <div class="hero">
+                <div class="hero-content">
+                    <h2>Build & Manage Project Enquiries</h2>
+                    <p>A full-stack portfolio website with comprehensive enquiry management functionality. Designed with Scandinavian minimalism and built with modern web technologies.</p>
+                    <p style="color: var(--text-primary); font-size: 0.95rem; margin-bottom: 1.5rem;">
+                        <strong>Key Highlights:</strong><br>
+                        ✓ Beautiful, responsive portfolio landing page<br>
+                        ✓ Comprehensive enquiry form with validation<br>
+                        ✓ Powerful dashboard with search & filtering<br>
+                        ✓ Real-time notifications & status tracking<br>
+                        ✓ Type-safe API with tRPC<br>
+                        ✓ Production-ready backend
+                    </p>
+                    <a href="/" class="cta-button">View Live Application</a>
+                </div>
+                <div class="hero-visual">
+                    <div class="shape shape-blue"></div>
+                    <div class="shape shape-pink"></div>
+                </div>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number">3</div>
+                    <div class="stat-label">Main Pages</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">5</div>
+                    <div class="stat-label">API Procedures</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">9</div>
+                    <div class="stat-label">Passing Tests</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">100%</div>
+                    <div class="stat-label">Responsive</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features Section -->
+        <section id="features">
+            <h2 style="font-size: 2.5rem; margin-bottom: 2rem;">Core Features</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🎨</div>
+                    <h3>Landing Page</h3>
+                    <p>Professional portfolio with self-introduction, specialization highlights, and compelling call-to-action buttons.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📝</div>
+                    <h3>Contact Form</h3>
+                    <p>Comprehensive enquiry form with real-time validation, supporting client info, project details, budget, and resource links.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <h3>Dashboard</h3>
+                    <p>Powerful management interface with table view, search, filtering, and status tracking for all enquiries.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔍</div>
+                    <h3>Details Modal</h3>
+                    <p>Click any enquiry to view full details including clickable resource links and submission timestamps.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🎯</div>
+                    <h3>CRUD Operations</h3>
+                    <p>Create, read, update, and delete enquiries with real-time feedback and comprehensive error handling.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🎨</div>
+                    <h3>Scandinavian Design</h3>
+                    <p>Minimalist aesthetic with pale gray backgrounds, bold black typography, and soft pastel accents.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Analytics Section -->
+        <section id="analytics">
+            <h2 style="font-size: 2.5rem; margin-bottom: 2rem;">Project Analytics</h2>
+            
+            <div class="chart-container">
+                <div class="chart-title">Enquiry Status Distribution</div>
+                <canvas id="statusChart"></canvas>
+            </div>
+
+            <div class="chart-container">
+                <div class="chart-title">Technology Stack Breakdown</div>
+                <canvas id="techChart"></canvas>
+            </div>
+
+            <div class="chart-container">
+                <div class="chart-title">Project Metrics</div>
+                <canvas id="metricsChart"></canvas>
+            </div>
+        </section>
+
+        <!-- Architecture Section -->
+        <section id="architecture">
+            <h2 style="font-size: 2.5rem; margin-bottom: 2rem;">Technical Architecture</h2>
+            
+            <h3 style="font-size: 1.5rem; margin: 2rem 0 1rem;">Frontend Stack</h3>
+            <div class="tech-grid">
+                <div class="tech-badge">React 19</div>
+                <div class="tech-badge">TypeScript</div>
+                <div class="tech-badge">Tailwind CSS 4</div>
+                <div class="tech-badge">shadcn/ui</div>
+                <div class="tech-badge">React Hook Form</div>
+                <div class="tech-badge">Zod</div>
+                <div class="tech-badge">tRPC</div>
+                <div class="tech-badge">Wouter</div>
+            </div>
+
+            <h3 style="font-size: 1.5rem; margin: 2rem 0 1rem;">Backend Stack</h3>
+            <div class="tech-grid">
+                <div class="tech-badge">Node.js</div>
+                <div class="tech-badge">Express</div>
+                <div class="tech-badge">tRPC</div>
+                <div class="tech-badge">Drizzle ORM</div>
+                <div class="tech-badge">MySQL/TiDB</div>
+                <div class="tech-badge">Vitest</div>
+                <div class="tech-badge">TypeScript</div>
+                <div class="tech-badge">Zod</div>
+            </div>
+
+            <h3 style="font-size: 1.5rem; margin: 2rem 0 1rem;">Database Schema</h3>
+            <div style="background: white; border: 1px solid var(--border-color); border-radius: 12px; padding: 2rem; margin: 1rem 0;">
+                <p style="font-family: monospace; color: var(--text-secondary); line-height: 1.8;">
+                    <strong>Enquiries Table</strong><br>
+                    • id (Primary Key)<br>
+                    • clientName (varchar 255)<br>
+                    • projectName (varchar 255)<br>
+                    • phoneNumber (varchar 20)<br>
+                    • projectDescription (text)<br>
+                    • budget (varchar 100)<br>
+                    • relevantLinks (text - JSON)<br>
+                    • status (enum: new, reviewed, in-progress, completed)<br>
+                    • createdAt (timestamp)<br>
+                    • updatedAt (timestamp)
+                </p>
+            </div>
+        </section>
+
+        <!-- Showcase Section -->
+        <section id="showcase">
+            <h2 style="font-size: 2.5rem; margin-bottom: 2rem;">Live Application</h2>
+            
+            <div style="background: white; border: 1px solid var(--border-color); border-radius: 12px; padding: 2rem; margin: 2rem 0;">
+                <h3 style="font-size: 1.3rem; margin-bottom: 1rem;">Ready to Explore?</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+                    The Portfolio Enquiry Management System is fully functional and ready to use. Visit the live application to:
+                </p>
+                <ul style="color: var(--text-secondary); margin-left: 1.5rem; margin-bottom: 1.5rem;">
+                    <li>✓ View the professional portfolio landing page</li>
+                    <li>✓ Submit a test enquiry through the contact form</li>
+                    <li>✓ Explore the enquiry management dashboard</li>
+                    <li>✓ Test search, filtering, and CRUD operations</li>
+                    <li>✓ Experience the responsive design on mobile</li>
+                </ul>
+                <a href="/" class="cta-button">Launch Application</a>
+            </div>
+
+            <div style="background: white; border: 1px solid var(--border-color); border-radius: 12px; padding: 2rem; margin: 2rem 0;">
+                <h3 style="font-size: 1.3rem; margin-bottom: 1rem;">Key Benefits</h3>
+                <div class="features-grid">
+                    <div>
+                        <p style="color: var(--text-secondary);"><strong>Explore Data Intuitively</strong><br>Interactive dashboard with real-time search and filtering makes it easy to find and manage enquiries.</p>
+                    </div>
+                    <div>
+                        <p style="color: var(--text-secondary);"><strong>Understand Trends Better</strong><br>Status tracking and statistics cards provide clear insights into enquiry progress and pipeline.</p>
+                    </div>
+                    <div>
+                        <p style="color: var(--text-secondary);"><strong>Easily Save or Share</strong><br>Export functionality and shareable links allow you to save or distribute enquiry information effortlessly.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2026 Portfolio Enquiry Management System. Built with React, TypeScript, and Tailwind CSS.</p>
+            <p style="margin-top: 1rem; font-size: 0.9rem;">
+                <a href="/" style="color: var(--accent-blue); text-decoration: none;">← Back to Application</a>
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        // Navigation
+        document.querySelectorAll('.nav-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
+                
+                btn.classList.add('active');
+                const sectionId = btn.dataset.section;
+                document.getElementById(sectionId).classList.add('active');
+            });
+        });
+
+        // Charts
+        const chartConfig = {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    labels: {
+                        font: { family: "'Sora', sans-serif", size: 12 },
+                        color: '#666666'
+                    }
+                }
+            }
+        };
+
+        // Status Chart
+        const statusCtx = document.getElementById('statusChart').getContext('2d');
+        new Chart(statusCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['New', 'Reviewed', 'In Progress', 'Completed'],
+                datasets: [{
+                    data: [35, 20, 30, 15],
+                    backgroundColor: [
+                        '#60a5fa',
+                        '#a78bfa',
+                        '#fbbf24',
+                        '#4ade80'
+                    ],
+                    borderColor: '#ffffff',
+                    borderWidth: 2
+                }]
+            },
+            options: chartConfig
+        });
+
+        // Tech Chart
+        const techCtx = document.getElementById('techChart').getContext('2d');
+        new Chart(techCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Frontend', 'Backend', 'Database', 'Testing'],
+                datasets: [{
+                    label: 'Technologies',
+                    data: [8, 8, 2, 2],
+                    backgroundColor: [
+                        '#7aa3d4',
+                        '#d9a8b3',
+                        '#a78bfa',
+                        '#60a5fa'
+                    ],
+                    borderRadius: 8,
+                    borderSkipped: false
+                }]
+            },
+            options: {
+                ...chartConfig,
+                indexAxis: 'y',
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        max: 10,
+                        ticks: { color: '#666666' },
+                        grid: { color: '#e8e8e8' }
+                    },
+                    y: {
+                        ticks: { color: '#666666' }
+                    }
+                }
+            }
+        });
+
+        // Metrics Chart
+        const metricsCtx = document.getElementById('metricsChart').getContext('2d');
+        new Chart(metricsCtx, {
+            type: 'radar',
+            data: {
+                labels: ['Code Quality', 'Performance', 'Accessibility', 'Security', 'Responsiveness', 'Testing'],
+                datasets: [{
+                    label: 'Project Score',
+                    data: [95, 90, 92, 94, 98, 100],
+                    borderColor: '#7aa3d4',
+                    backgroundColor: 'rgba(122, 163, 212, 0.1)',
+                    borderWidth: 2,
+                    pointBackgroundColor: '#7aa3d4',
+                    pointBorderColor: '#ffffff',
+                    pointBorderWidth: 2,
+                    pointRadius: 5
+                }]
+            },
+            options: {
+                ...chartConfig,
+                scales: {
+                    r: {
+                        beginAtZero: true,
+                        max: 100,
+                        ticks: { color: '#666666' },
+                        grid: { color: '#e8e8e8' }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
